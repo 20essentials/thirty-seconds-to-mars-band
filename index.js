@@ -1,76 +1,22 @@
 /******************** SONGS ********************/
+import { nameBand, nameSongs } from './config.js';
 
-const nameBand = 'THIRTY SECONDS TO MARS';
+const MAXIMUM_LENGTH_OF_PLAYLIST = 20;
+const arraySongs = Array.from({ length: MAXIMUM_LENGTH_OF_PLAYLIST }, (_, i) => `songs/n${i + 1}.mp3`);
 
-let nameSongs = [
-	"WALK ON WATER", /*1*/
-	"THIS IS WAR", /*2*/
-	"HURRICANE", /*3*/
-	"NIGHT OF THE HUNTER", /*4*/
-	"SEARCH AND DESTROY", /*5*/
-	"STRANGER IN A STRANGE LAND", /*6*/
-	"VOX POPULI", /*7*/
-	"ALIBI", /*8*/
-	"CLOSER TO THE EDGE", /*9*/
-	"KINGS AND QUEENS", /*10*/
-	"FROM YESTERDAY", /*11*/
-	"THE KILL", /*12*/
-	"A BEAUTIFUL LIE", /*13*/
-	"THE STORY", /*14*/
-	"WAS IT A DREAM?", /*15*/
-	"ATTACK", /*16*/
-	"R-EVOLVE", /*17*/
-	"UP IN THE AIR", /*18*/
-	"CITY OF ANGELS", /*19*/
-	"RESCUE ME", /*20*/
-]
-
-const arraySongs = [
-  'songs/n1.mp3',
-  'songs/n2.mp3',
-  'songs/n3.mp3',
-  'songs/n4.mp3',
-  'songs/n5.mp3',
-  'songs/n6.mp3',
-  'songs/n7.mp3',
-  'songs/n8.mp3',
-  'songs/n9.mp3',
-  'songs/n10.mp3',
-  'songs/n11.mp3',
-  'songs/n12.mp3',
-  'songs/n13.mp3',
-  'songs/n14.mp3',
-  'songs/n15.mp3',
-  'songs/n16.mp3',
-  'songs/n17.mp3',
-  'songs/n18.mp3',
-  'songs/n19.mp3',
-  'songs/n20.mp3'
-];
+function updateRowsModalAndButtonActive() {
+  setTimeout(() => {
+    updateButtonNavActive($('.am-button-nav-modal.order'), 'button-nav-selected');
+    scrollToBottomContainerModal();
+  }, 50);
+}
 
 /******************** MEDIA SESSION CONFIG ********************/
-const playlist = [
-  { title: nameSongs[0], artist: nameBand, url: arraySongs[0] },
-  { title: nameSongs[1], artist: nameBand, url: arraySongs[1] },
-  { title: nameSongs[2], artist: nameBand, url: arraySongs[2] },
-  { title: nameSongs[3], artist: nameBand, url: arraySongs[3] },
-  { title: nameSongs[4], artist: nameBand, url: arraySongs[4] },
-  { title: nameSongs[5], artist: nameBand, url: arraySongs[5] },
-  { title: nameSongs[6], artist: nameBand, url: arraySongs[6] },
-  { title: nameSongs[7], artist: nameBand, url: arraySongs[7] },
-  { title: nameSongs[8], artist: nameBand, url: arraySongs[8] },
-  { title: nameSongs[9], artist: nameBand, url: arraySongs[9] },
-  { title: nameSongs[10], artist: nameBand, url: arraySongs[10] },
-  { title: nameSongs[11], artist: nameBand, url: arraySongs[11] },
-  { title: nameSongs[12], artist: nameBand, url: arraySongs[12] },
-  { title: nameSongs[13], artist: nameBand, url: arraySongs[13] },
-  { title: nameSongs[14], artist: nameBand, url: arraySongs[14] },
-  { title: nameSongs[15], artist: nameBand, url: arraySongs[15] },
-  { title: nameSongs[16], artist: nameBand, url: arraySongs[16] },
-  { title: nameSongs[17], artist: nameBand, url: arraySongs[17] },
-  { title: nameSongs[18], artist: nameBand, url: arraySongs[18] },
-  { title: nameSongs[19], artist: nameBand, url: arraySongs[19] }
-];
+const playlist = Array.from({ length: MAXIMUM_LENGTH_OF_PLAYLIST }, (_, i) => ({
+  title: nameSongs[i]?.trim(),
+  artist: nameBand,
+  url: arraySongs[i]
+}));
 
 function toCapitalize(text = '') {
   return text
@@ -81,9 +27,7 @@ function toCapitalize(text = '') {
         return `${el[0].toUpperCase()}${el.slice(1).toLowerCase()}`;
       let secondLetter =
         el[0] === '(' ? el[1].toUpperCase() : el[1].toLowerCase();
-      return `${el[0].toUpperCase()}${secondLetter}${el
-        .slice(2)
-        .toLowerCase()}`;
+      return `${el[0].toUpperCase()}${secondLetter}${el.slice(2).toLowerCase()}`;
     })
     .join(' ')
     .replace(/\s+/g, ' ');
@@ -97,9 +41,7 @@ function updateMetadata(currentIndex = 0) {
       )
       .getPropertyValue('background-image') ?? '1';
   let indexPosition = currentUrl.search(/\/n\d/);
-  let imageNumber = currentUrl
-    .slice(indexPosition + 2, indexPosition + 3)
-    .trim();
+  let imageNumber = currentUrl.slice(indexPosition + 2, indexPosition + 3).trim();
 
   navigator.mediaSession.metadata = new MediaMetadata({
     title: `${toCapitalize(playlist[currentIndex].title)}`,
@@ -154,7 +96,7 @@ function previousTrack(currentIndex) {
     $audio.loop = false;
     actualButtonPlayActive(currentIndex);
     nextTrack(currentIndex);
-    showTitle(currentIndex)
+    showTitle(currentIndex);
   });
 }
 
@@ -239,8 +181,8 @@ const blockPlayPauseStopBUTTON = () => {
 };
 
 const removeClassBlockedButtonNextSiblings = el => {
-  [...el.closest('.card-right-buttons').querySelectorAll('button')].forEach(
-    btn => btn.classList.remove('blocked')
+  [...el.closest('.card-right-buttons').querySelectorAll('button')].forEach(btn =>
+    btn.classList.remove('blocked')
   );
 };
 
@@ -277,7 +219,6 @@ const actualButtonPlayActive = (index = 0) => {
 
   d.addEventListener('input', e => {
     if (e.target === $inputRange) {
-      actualButtonPlayActive(index);
       $audio.currentTime = e.target.value;
       $audio.play();
     }
@@ -300,9 +241,7 @@ const showTitle = elIndex => {
 const playAllSongs = (songs, selector) => {
   if (listNumbersSongs?.length > 0) {
     let arrayCards = listNumbersSongs.map(i => $$('.card')[i]);
-    let arrayColors = listNumbersSongs.map(
-      i => $$('.card')[i].dataset.colorCard
-    );
+    let arrayColors = listNumbersSongs.map(i => $$('.card')[i].dataset.colorCard);
     arrayCards.forEach((card, i) => (card.style.color = arrayColors[i]));
     listNumbersSongs = [];
   }
@@ -319,6 +258,7 @@ const playAllSongs = (songs, selector) => {
         $audio.currentTime = 0;
       }
       $audio.src = songs[index];
+      $audio.loop = false;
       removeClassBlockedButtonNextSiblings($btnsPlay[index]);
       showTitle(index);
 
@@ -334,14 +274,13 @@ const playAllSongs = (songs, selector) => {
         $audio.src = arraySongs[currentIndex];
         $audio.loop = false;
         actualButtonPlayActive(currentIndex);
-        showTitle(currentIndex)
+        showTitle(currentIndex);
       }
 
       function previousTrack(currentIndex) {
         navigator.mediaSession.setActionHandler('previoustrack', () => {
           index--;
-          currentIndex =
-            (currentIndex - 1 + playlist.length) % playlist.length;
+          currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
           if (index === -1) index = currentIndex + 1;
           nextTrack(currentIndex);
           actualAudio(currentIndex);
@@ -374,9 +313,7 @@ const playAllSongs = (songs, selector) => {
 const playRandomSongs = (songs, selector) => {
   if (listNumbersSongs?.length > 0) {
     let arrayCards = listNumbersSongs.map(i => $$('.card')[i]);
-    let arrayColors = listNumbersSongs.map(
-      i => $$('.card')[i].dataset.colorCard
-    );
+    let arrayColors = listNumbersSongs.map(i => $$('.card')[i].dataset.colorCard);
     arrayCards.forEach((card, i) => (card.style.color = arrayColors[i]));
     listNumbersSongs = [];
   }
@@ -419,14 +356,13 @@ const playRandomSongs = (songs, selector) => {
         $audio.loop = false;
         updateMetadata(unArray[currentIndex]);
         actualButtonPlayActive(unArray[currentIndex]);
-        showTitle(unArray[currentIndex])
+        showTitle(unArray[currentIndex]);
       }
 
       function previousTrackOfRandomSongs(currentIndex) {
         navigator.mediaSession.setActionHandler('previoustrack', () => {
           index--;
-          currentIndex =
-            (currentIndex - 1 + playlist.length) % playlist.length;
+          currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
           if (index === -1) index = currentIndex + 1;
           nextTrackOfRandomSongs(currentIndex);
           actualAudio(currentIndex);
@@ -455,9 +391,7 @@ const playRandomSongs = (songs, selector) => {
 };
 
 const removeClassNavButtonActive = () => {
-  [...$$('.nav-btn-active')].forEach(el =>
-    el.classList.remove('nav-btn-active')
-  );
+  [...$$('.nav-btn-active')].forEach(el => el.classList.remove('nav-btn-active'));
 };
 
 const playSelectedSongs = (songs, selector, listNumber) => {
@@ -531,9 +465,7 @@ generateStars(200, '.star-1', '2px', '20s');
 
 (function headerCustomProperties() {
   const { body } = document;
-  let numberRandom = Math.floor(
-    Math.random() * Object.keys(headerColors).length
-  );
+  let numberRandom = Math.floor(Math.random() * Object.keys(headerColors).length);
   const [color1, color2, color3, color4] = headerColors[numberRandom];
   body.style.setProperty('--color1', color1);
   body.style.setProperty('--color2', color2);
@@ -574,9 +506,10 @@ d.addEventListener('click', e => {
       arrayCards.forEach((card, i) => (card.style.color = arrayColors[i]));
       listNumbersSongs = [];
     }
+    const arrayPlayButtons = [...$$(cardPlayButtonClass)];
 
     blockPlayPauseStopBUTTON();
-    const index = [...$$(cardPlayButtonClass)].indexOf(e.target);
+    let index = arrayPlayButtons.indexOf(e.target);
     _removeClassBlockedButtonNextSiblings(index);
 
     let audioActual = d.createElement('audio');
@@ -605,6 +538,13 @@ d.addEventListener('click', e => {
       );
       return;
     }
+
+    $audio.onended = () => {
+      index = index = (index + 1) % playlist.length;
+      const btnPlayNew = arrayPlayButtons[index];
+      if (index === 0) return;
+      btnPlayNew.click();
+    };
 
     return;
   }
@@ -664,10 +604,11 @@ d.addEventListener('click', e => {
     e.target.parentElement.close();
     setTimeout(() => {
       $('.am-modal')
-      .querySelector('.container-add-playlist')
-      .classList.remove('mode-active');
-    }, 500)
-    d.getElementById('agregarPlaylistInput').value = '';
+        .querySelector('.container-add-playlist')
+        .classList.remove('mode-active');
+    }, 500);
+    $('#agregarPlaylistInput').value = '';
+    updateButtonNavActive($('.am-button-nav-modal.order'), 'button-nav-selected');
     return;
   }
 
@@ -700,13 +641,12 @@ d.addEventListener('click', e => {
         })
       );
       RenderPlaylistItems();
+      updateRowsModalAndButtonActive();
       input.value = '';
       return;
     }
 
-    let objectListNameCards = JSON.parse(
-      localStorage.getItem('listname-cards')
-    );
+    let objectListNameCards = JSON.parse(localStorage.getItem('listname-cards'));
     let newObjectListNameCards = JSON.stringify({
       ...objectListNameCards,
       [`${inputValor}`]: ''
@@ -714,7 +654,7 @@ d.addEventListener('click', e => {
 
     localStorage.setItem('listname-cards', newObjectListNameCards);
     RenderPlaylistItems();
-    $('.container-modal').scrollTop = $('.container-modal').scrollHeight;
+    updateRowsModalAndButtonActive();
     input.value = '';
   }
   /******************** EVENT DELEGATION NAV ********************/
@@ -781,9 +721,7 @@ d.addEventListener('change', e => {
     let currentNameSong = localStorage.getItem('lastCurrentNameSong');
     let url = localStorage.getItem('lastCurrentURLSong');
     let currentId = e.target.id;
-    let objectListNameCards = JSON.parse(
-      localStorage.getItem('listname-cards')
-    );
+    let objectListNameCards = JSON.parse(localStorage.getItem('listname-cards'));
     if (!objectListNameCards) return;
     let clase = e.target.getAttribute('data-clase');
     let $output = $(`.${clase}`);
@@ -800,7 +738,6 @@ d.addEventListener('change', e => {
       localStorage.setItem('listname-cards', JSON.stringify(newObject));
 
       $output.innerHTML = Number($output.innerHTML) + 1;
-      RenderPlaylistItems();
       return;
     }
 
@@ -815,10 +752,7 @@ d.addEventListener('change', e => {
       }
     }
 
-    let newArrray = objectListNameCards[`${currentId}`].toSpliced(
-      indiceReal,
-      1
-    );
+    let newArrray = objectListNameCards[`${currentId}`].toSpliced(indiceReal, 1);
 
     let newObject = {
       ...objectListNameCards,
@@ -827,7 +761,6 @@ d.addEventListener('change', e => {
 
     localStorage.setItem('listname-cards', JSON.stringify(newObject));
     $output.innerHTML = Number($output.innerHTML) - 1;
-    RenderPlaylistItems();
     return;
   }
 });
@@ -880,13 +813,12 @@ d.addEventListener('keydown', e => {
         })
       );
       RenderPlaylistItems();
+      updateRowsModalAndButtonActive();
       input.value = '';
       return;
     }
 
-    let objectListNameCards = JSON.parse(
-      localStorage.getItem('listname-cards')
-    );
+    let objectListNameCards = JSON.parse(localStorage.getItem('listname-cards'));
     let newObjectListNameCards = JSON.stringify({
       ...objectListNameCards,
       [`${inputValor}`]: ''
@@ -894,7 +826,7 @@ d.addEventListener('keydown', e => {
 
     localStorage.setItem('listname-cards', newObjectListNameCards);
     RenderPlaylistItems();
-    $('.container-modal').scrollTop = $('.container-modal').scrollHeight;
+    updateRowsModalAndButtonActive();
     input.value = '';
   }
 });
@@ -904,9 +836,7 @@ d.addEventListener('keydown', e => {
 function existThisSongInSomePlaylist(currentName) {
   let nameCurrent = currentName ?? '';
   if (localStorage.getItem('listname-cards')) {
-    let objetoNamePlaylists = JSON.parse(
-      localStorage.getItem('listname-cards')
-    );
+    let objetoNamePlaylists = JSON.parse(localStorage.getItem('listname-cards'));
     let playlistsWhereExistsCurrenName = [];
     let namesPlaylists = [];
 
@@ -951,7 +881,7 @@ function RenderPlaylistItems() {
       clon.querySelector('label').innerHTML = key;
       clon.querySelector('output').setAttribute('class', toKebabCase(key));
       clon.querySelector('output').innerHTML = objectNames[key].length;
-      if (objectNames[key].length === 20) {
+      if (objectNames[key].length === MAXIMUM_LENGTH_OF_PLAYLIST) {
         clon.querySelector('input[type=checkbox]').disabled = 'true';
         guardarKey = key;
       }
@@ -1054,3 +984,157 @@ const observer = new IntersectionObserver(
 );
 
 cards.forEach(card => observer.observe(card));
+
+/******************** BUTTON NAV MODAL ********************/
+
+let containerModal = document.querySelector('.container-modal');
+
+function RenderPlaylistItemsOfTheContainerBottom(objectOfCards) {
+  const currentName = localStorage.getItem('lastCurrentNameSong');
+
+  if (!currentName) return;
+
+  const objectNames =
+    objectOfCards ?? JSON.parse(localStorage.getItem('listname-cards'));
+  const template = $('.template-modal-fila').content;
+  const tituloModal = $('.tituto-modal');
+  const containerModal = $('.container-modal');
+
+  tituloModal.textContent = `Save ${currentName} in..`;
+  containerModal.innerHTML = '';
+
+  const fragment = d.createDocumentFragment();
+  const currentPlaylists = existThisSongInSomePlaylist(currentName);
+
+  for (const name in objectNames) {
+    const kebabName = toKebabCase(name);
+    const playlist = objectNames[name];
+    const clone = template.cloneNode(true);
+
+    const input = clone.querySelector('input');
+    const label = clone.querySelector('label');
+    const output = clone.querySelector('output');
+
+    input.id = name;
+    input.dataset.clase = kebabName;
+    input.disabled = playlist.length === MAXIMUM_LENGTH_OF_PLAYLIST;
+
+    label.htmlFor = name;
+    label.textContent = name;
+
+    output.className = kebabName;
+    output.textContent = playlist.length;
+
+    fragment.appendChild(clone);
+  }
+
+  containerModal.appendChild(fragment);
+
+  currentPlaylists.forEach(name => {
+    const checkbox = containerModal.querySelector(
+      `[data-clase="${toKebabCase(name)}"]`
+    );
+    if (checkbox) {
+      checkbox.checked = true;
+      checkbox.disabled = false;
+    }
+  });
+}
+
+function updateButtonNavActive(target, classNameToAdd) {
+  if (!target.classList.contains(classNameToAdd)) {
+    $(`.${classNameToAdd}`).classList.remove(classNameToAdd);
+    let timer = setTimeout(() => {
+      target.classList.add(classNameToAdd);
+      clearTimeout(timer);
+    }, 20);
+  }
+}
+
+function scrollToTopContainerModal() {
+  $('.container-modal').scrollTop = 0;
+}
+
+function scrollToBottomContainerModal() {
+  $('.container-modal').scrollTop = $('.container-modal').scrollHeight;
+}
+
+document.addEventListener('click', e => {
+  const target = e.target;
+  if (target.matches('.am-button-nav-modal')) {
+    if (target.matches('.order')) {
+      containerModal.innerHTML = '';
+
+      updateButtonNavActive(target, 'button-nav-selected');
+      scrollToTopContainerModal();
+      RenderPlaylistItemsOfTheContainerBottom();
+      return;
+    }
+
+    if (target.matches('.unorder')) {
+      containerModal.innerHTML = '';
+      updateButtonNavActive(target, 'button-nav-selected');
+      scrollToTopContainerModal();
+
+      const objectNames = JSON.parse(localStorage.getItem('listname-cards'));
+      if (!objectNames) return;
+      const reversedObj = Object.entries(objectNames)
+        .reverse()
+        .reduce((acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        }, {});
+
+      RenderPlaylistItemsOfTheContainerBottom(reversedObj);
+      return;
+    }
+
+    if (target.matches('.random')) {
+      containerModal.innerHTML = '';
+      updateButtonNavActive(target, 'button-nav-selected');
+      scrollToTopContainerModal();
+
+      const objectNames = JSON.parse(localStorage.getItem('listname-cards'));
+      if (!objectNames) return;
+      const shuffledEntries = Object.entries(objectNames).sort(
+        () => Math.random() - 0.5
+      );
+
+      const shuffledObj = Object.fromEntries(shuffledEntries);
+      RenderPlaylistItemsOfTheContainerBottom(shuffledObj);
+      return;
+    }
+
+    if (target.matches('.a-to-z')) {
+      containerModal.innerHTML = '';
+      updateButtonNavActive(target, 'button-nav-selected');
+      scrollToTopContainerModal();
+
+      const objectNames = JSON.parse(localStorage.getItem('listname-cards'));
+      if (!objectNames) return;
+      const sortedEntries = Object.entries(objectNames).sort((a, b) =>
+        a[0].localeCompare(b[0])
+      );
+
+      const sortedObj = Object.fromEntries(sortedEntries);
+      RenderPlaylistItemsOfTheContainerBottom(sortedObj);
+      return;
+    }
+
+    if (target.matches('.z-to-a')) {
+      containerModal.innerHTML = '';
+      updateButtonNavActive(target, 'button-nav-selected');
+      scrollToTopContainerModal();
+
+      const objectNames = JSON.parse(localStorage.getItem('listname-cards'));
+      if (!objectNames) return;
+      const sortedEntries = Object.entries(objectNames).sort((a, b) =>
+        b[0].localeCompare(a[0])
+      );
+
+      const sortedObj = Object.fromEntries(sortedEntries);
+      RenderPlaylistItemsOfTheContainerBottom(sortedObj);
+      return;
+    }
+  }
+});
